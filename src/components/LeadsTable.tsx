@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
-import { Copy, Filter } from "lucide-react";
+import { Copy, Download, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -107,6 +107,37 @@ export function LeadsTable() {
     });
   }
 
+  function exportToCSV() {
+    const headers = ["Name", "Email", "Phone", "Budget", "Move-in Date", "Neighborhoods", "Status", "Created At"];
+    const csvData = filteredLeads.map((lead) => [
+      lead.full_name,
+      lead.email,
+      lead.phone,
+      BUDGET_LABELS[lead.budget_range] || lead.budget_range,
+      format(new Date(lead.move_in_date), "yyyy-MM-dd"),
+      lead.neighborhoods.join("; "),
+      lead.status,
+      format(new Date(lead.created_at), "yyyy-MM-dd HH:mm"),
+    ]);
+
+    const csvContent = [headers, ...csvData]
+      .map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","))
+      .join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `leads-export-${format(new Date(), "yyyy-MM-dd")}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+
+    toast({
+      title: "Export complete",
+      description: `${filteredLeads.length} leads exported to CSV`,
+    });
+  }
+
   const filteredLeads = leads.filter((lead) => {
     if (budgetFilter === "all") return true;
     return lead.budget_range === budgetFilter;
@@ -122,19 +153,25 @@ export function LeadsTable() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-3">
-        <Filter className="h-4 w-4 text-muted-foreground" />
-        <Select value={budgetFilter} onValueChange={setBudgetFilter}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Filter by budget" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Budgets</SelectItem>
-            <SelectItem value="2k-3k">$2k - $3k</SelectItem>
-            <SelectItem value="3k-5k">$3k - $5k</SelectItem>
-            <SelectItem value="5k+">$5k+</SelectItem>
-          </SelectContent>
-        </Select>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <Filter className="h-4 w-4 text-muted-foreground" />
+          <Select value={budgetFilter} onValueChange={setBudgetFilter}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Filter by budget" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Budgets</SelectItem>
+              <SelectItem value="2k-3k">$2k - $3k</SelectItem>
+              <SelectItem value="3k-5k">$3k - $5k</SelectItem>
+              <SelectItem value="5k+">$5k+</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <Button variant="outline" onClick={exportToCSV} disabled={filteredLeads.length === 0}>
+          <Download className="h-4 w-4 mr-2" />
+          Export CSV
+        </Button>
       </div>
 
       <div className="rounded-lg border bg-card">
