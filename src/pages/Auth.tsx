@@ -24,12 +24,22 @@ const authSchema = z.object({
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
+const newPasswordSchema = z.object({
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  confirmPassword: z.string().min(6, "Password must be at least 6 characters"),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
+});
+
 type AuthFormData = z.infer<typeof authSchema>;
+type NewPasswordFormData = z.infer<typeof newPasswordSchema>;
 
 export default function Auth() {
   const [isLoading, setIsLoading] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [resetEmail, setResetEmail] = useState("");
+  const [isRecoveryMode, setIsRecoveryMode] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -41,21 +51,43 @@ export default function Auth() {
     },
   });
 
+  const newPasswordForm = useForm<NewPasswordFormData>({
+    resolver: zodResolver(newPasswordSchema),
+    defaultValues: {
+      password: "",
+      confirmPassword: "",
+    },
+  });
+
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session?.user) {
+      if (event === "PASSWORD_RECOVERY") {
+        setIsRecoveryMode(true);
+        return;
+      }
+      
+      if (session?.user && !isRecoveryMode) {
         navigate("/admin");
       }
     });
 
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) {
+      // Check URL for recovery token
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
+      const type = hashParams.get("type");
+      
+      if (type === "recovery") {
+        setIsRecoveryMode(true);
+        return;
+      }
+      
+      if (session?.user && !isRecoveryMode) {
         navigate("/admin");
       }
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, [navigate, isRecoveryMode]);
 
   async function onSubmit(data: AuthFormData) {
     setIsLoading(true);
@@ -70,6 +102,33 @@ export default function Auth() {
     } catch (error: any) {
       toast({
         title: "Authentication error",
+        description: error.message || "An error occurred",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function onNewPasswordSubmit(data: NewPasswordFormData) {
+    setIsLoading(true);
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: data.password,
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Password updated",
+        description: "Your password has been successfully changed.",
+      });
+      
+      setIsRecoveryMode(false);
+      navigate("/admin");
+    } catch (error: any) {
+      toast({
+        title: "Error updating password",
         description: error.message || "An error occurred",
         variant: "destructive",
       });
@@ -147,72 +206,137 @@ export default function Auth() {
             </span>
           </div>
 
-          <div className="text-center mb-8">
-            <h1 className="font-heading text-3xl md:text-4xl font-bold text-[#101828] mb-2">
-              Welcome Back
-            </h1>
-            <p className="text-muted-foreground">
-              Sign in to manage your leads
-            </p>
-          </div>
+          {isRecoveryMode ? (
+            <>
+              <div className="text-center mb-8">
+                <h1 className="font-heading text-3xl md:text-4xl font-bold text-[#101828] mb-2">
+                  Set New Password
+                </h1>
+                <p className="text-muted-foreground">
+                  Enter your new password below
+                </p>
+              </div>
 
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-[#101828] font-medium">Email</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="email"
-                        placeholder="admin@example.com"
-                        className="rounded-none border-muted-foreground/30 focus:border-[#101828] h-12"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <Form {...newPasswordForm}>
+                <form onSubmit={newPasswordForm.handleSubmit(onNewPasswordSubmit)} className="space-y-5">
+                  <FormField
+                    control={newPasswordForm.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-[#101828] font-medium">New Password</FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="password" 
+                            placeholder="••••••••" 
+                            className="rounded-none border-muted-foreground/30 focus:border-[#101828] h-12"
+                            {...field} 
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-[#101828] font-medium">Password</FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="password" 
-                        placeholder="••••••••" 
-                        className="rounded-none border-muted-foreground/30 focus:border-[#101828] h-12"
-                        {...field} 
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                  <FormField
+                    control={newPasswordForm.control}
+                    name="confirmPassword"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-[#101828] font-medium">Confirm Password</FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="password" 
+                            placeholder="••••••••" 
+                            className="rounded-none border-muted-foreground/30 focus:border-[#101828] h-12"
+                            {...field} 
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-              <Button 
-                type="submit" 
-                className="w-full h-12 bg-[#101828] hover:bg-[#101828]/90 text-white rounded-none font-medium uppercase tracking-wide" 
-                disabled={isLoading}
-              >
-                {isLoading ? "Loading..." : "Sign In"}
-              </Button>
+                  <Button 
+                    type="submit" 
+                    className="w-full h-12 bg-[#101828] hover:bg-[#101828]/90 text-white rounded-none font-medium uppercase tracking-wide" 
+                    disabled={isLoading}
+                  >
+                    {isLoading ? "Updating..." : "Update Password"}
+                  </Button>
+                </form>
+              </Form>
+            </>
+          ) : (
+            <>
+              <div className="text-center mb-8">
+                <h1 className="font-heading text-3xl md:text-4xl font-bold text-[#101828] mb-2">
+                  Welcome Back
+                </h1>
+                <p className="text-muted-foreground">
+                  Sign in to manage your leads
+                </p>
+              </div>
 
-              <button
-                type="button"
-                onClick={() => setShowForgotPassword(true)}
-                className="w-full text-sm text-muted-foreground hover:text-[#101828] transition-colors"
-              >
-                Forgot your password?
-              </button>
-            </form>
-          </Form>
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-[#101828] font-medium">Email</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="email"
+                            placeholder="admin@example.com"
+                            className="rounded-none border-muted-foreground/30 focus:border-[#101828] h-12"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-[#101828] font-medium">Password</FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="password" 
+                            placeholder="••••••••" 
+                            className="rounded-none border-muted-foreground/30 focus:border-[#101828] h-12"
+                            {...field} 
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <Button 
+                    type="submit" 
+                    className="w-full h-12 bg-[#101828] hover:bg-[#101828]/90 text-white rounded-none font-medium uppercase tracking-wide" 
+                    disabled={isLoading}
+                  >
+                    {isLoading ? "Loading..." : "Sign In"}
+                  </Button>
+
+                  <button
+                    type="button"
+                    onClick={() => setShowForgotPassword(true)}
+                    className="w-full text-sm text-muted-foreground hover:text-[#101828] transition-colors"
+                  >
+                    Forgot your password?
+                  </button>
+                </form>
+              </Form>
+            </>
+          )}
 
           {/* Forgot Password Modal */}
           {showForgotPassword && (
