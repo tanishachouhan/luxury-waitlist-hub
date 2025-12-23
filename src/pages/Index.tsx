@@ -3,6 +3,7 @@ import { Users, BarChart3, Mail, ArrowRight } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { WaitlistForm } from "@/components/WaitlistForm";
+import { AnimatedSection } from "@/components/AnimatedSection";
 
 const FEATURES = [
   {
@@ -49,69 +50,78 @@ const Index = () => {
       {/* Hero Section */}
       <section className="py-20 md:py-28 bg-gradient-to-b from-muted/50 to-background">
         <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center mb-12">
+          <AnimatedSection className="max-w-3xl mx-auto text-center mb-12">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground tracking-tight mb-6">
               The Smartest Way to Manage Real Estate Leads.
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
               Stop using messy spreadsheets. Capture, track, and convert leads with our simple CRM.
             </p>
-          </div>
+          </AnimatedSection>
           
-          <Card className="max-w-xl mx-auto shadow-lg border-border">
-            <CardContent className="p-6 md:p-8">
-              <WaitlistForm />
-            </CardContent>
-          </Card>
+          <AnimatedSection delay={200}>
+            <Card className="max-w-xl mx-auto shadow-lg border-border">
+              <CardContent className="p-6 md:p-8">
+                <WaitlistForm />
+              </CardContent>
+            </Card>
+          </AnimatedSection>
         </div>
       </section>
 
       {/* Social Proof Strip */}
       <section className="py-12 border-y border-border bg-muted/30">
         <div className="container mx-auto px-4">
-          <p className="text-center text-sm text-muted-foreground mb-8">
-            Trusted by agents at:
-          </p>
-          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16">
-            {["Douglas Elliman", "Compass", "Sotheby's", "Corcoran", "Brown Harris"].map((name) => (
-              <div
-                key={name}
-                className="text-lg md:text-xl font-semibold text-muted-foreground/50"
-              >
-                {name}
-              </div>
-            ))}
-          </div>
+          <AnimatedSection>
+            <p className="text-center text-sm text-muted-foreground mb-8">
+              Trusted by agents at:
+            </p>
+            <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16">
+              {["Douglas Elliman", "Compass", "Sotheby's", "Corcoran", "Brown Harris"].map((name, index) => (
+                <div
+                  key={name}
+                  className="text-lg md:text-xl font-semibold text-muted-foreground/50 transition-all duration-500"
+                  style={{ 
+                    animationDelay: `${index * 100}ms`
+                  }}
+                >
+                  {name}
+                </div>
+              ))}
+            </div>
+          </AnimatedSection>
         </div>
       </section>
 
       {/* Features Grid */}
       <section className="py-20 md:py-28 bg-background">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
+          <AnimatedSection className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
               Everything you need to close more deals
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
               Simple, powerful tools designed specifically for real estate professionals.
             </p>
-          </div>
+          </AnimatedSection>
           
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {FEATURES.map((feature) => (
-              <Card key={feature.title} className="border-border bg-card hover:shadow-md transition-shadow">
-                <CardContent className="p-6 text-center">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                    <feature.icon className="h-6 w-6 text-primary" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-foreground mb-2">
-                    {feature.title}
-                  </h3>
-                  <p className="text-muted-foreground text-sm">
-                    {feature.description}
-                  </p>
-                </CardContent>
-              </Card>
+            {FEATURES.map((feature, index) => (
+              <AnimatedSection key={feature.title} delay={index * 150}>
+                <Card className="border-border bg-card hover:shadow-md transition-shadow h-full">
+                  <CardContent className="p-6 text-center">
+                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                      <feature.icon className="h-6 w-6 text-primary" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-foreground mb-2">
+                      {feature.title}
+                    </h3>
+                    <p className="text-muted-foreground text-sm">
+                      {feature.description}
+                    </p>
+                  </CardContent>
+                </Card>
+              </AnimatedSection>
             ))}
           </div>
         </div>
