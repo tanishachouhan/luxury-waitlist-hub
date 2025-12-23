@@ -149,13 +149,13 @@ const Index = () => {
             </p>
             <div className="flex items-center gap-8">
               <Link
-                to="#"
+                to="/privacy"
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors font-light"
               >
                 Privacy Policy
               </Link>
               <Link
-                to="#"
+                to="/terms"
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors font-light"
               >
                 Terms of Service
