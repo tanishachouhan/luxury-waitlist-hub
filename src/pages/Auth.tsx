@@ -14,7 +14,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import heroImage from "@/assets/hero-architecture.jpg";
@@ -28,7 +28,6 @@ type AuthFormData = z.infer<typeof authSchema>;
 
 export default function Auth() {
   const [isLoading, setIsLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<"login" | "signup">("login");
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [resetEmail, setResetEmail] = useState("");
   const navigate = useNavigate();
@@ -61,42 +60,13 @@ export default function Auth() {
   async function onSubmit(data: AuthFormData) {
     setIsLoading(true);
     try {
-      if (activeTab === "signup") {
-        const { error } = await supabase.auth.signUp({
-          email: data.email,
-          password: data.password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/admin`,
-          },
-        });
+      const { error } = await supabase.auth.signInWithPassword({
+        email: data.email,
+        password: data.password,
+      });
 
-        if (error) {
-          if (error.message.includes("already registered")) {
-            toast({
-              title: "Account already exists",
-              description: "Please sign in instead.",
-              variant: "destructive",
-            });
-            setActiveTab("login");
-          } else {
-            throw error;
-          }
-        } else {
-          toast({
-            title: "Account created!",
-            description: "You can now sign in.",
-          });
-          setActiveTab("login");
-        }
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({
-          email: data.email,
-          password: data.password,
-        });
-
-        if (error) throw error;
-        navigate("/admin");
-      }
+      if (error) throw error;
+      navigate("/admin");
     } catch (error: any) {
       toast({
         title: "Authentication error",
@@ -179,95 +149,70 @@ export default function Auth() {
 
           <div className="text-center mb-8">
             <h1 className="font-heading text-3xl md:text-4xl font-bold text-[#101828] mb-2">
-              {activeTab === "login" ? "Welcome Back" : "Create Account"}
+              Welcome Back
             </h1>
             <p className="text-muted-foreground">
-              {activeTab === "login" 
-                ? "Sign in to manage your leads" 
-                : "Get started with EstateCRM"}
+              Sign in to manage your leads
             </p>
           </div>
 
-          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "login" | "signup")}>
-            <TabsList className="grid w-full grid-cols-2 mb-8 rounded-none border border-border bg-transparent">
-              <TabsTrigger 
-                value="login" 
-                className="rounded-none data-[state=active]:bg-[#101828] data-[state=active]:text-white"
-              >
-                Sign In
-              </TabsTrigger>
-              <TabsTrigger 
-                value="signup"
-                className="rounded-none data-[state=active]:bg-[#101828] data-[state=active]:text-white"
-              >
-                Sign Up
-              </TabsTrigger>
-            </TabsList>
-
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-[#101828] font-medium">Email</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="email"
-                          placeholder="admin@example.com"
-                          className="rounded-none border-muted-foreground/30 focus:border-[#101828] h-12"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-[#101828] font-medium">Password</FormLabel>
-                      <FormControl>
-                        <Input 
-                          type="password" 
-                          placeholder="••••••••" 
-                          className="rounded-none border-muted-foreground/30 focus:border-[#101828] h-12"
-                          {...field} 
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <Button 
-                  type="submit" 
-                  className="w-full h-12 bg-[#101828] hover:bg-[#101828]/90 text-white rounded-none font-medium uppercase tracking-wide" 
-                  disabled={isLoading}
-                >
-                  {isLoading
-                    ? "Loading..."
-                    : activeTab === "login"
-                    ? "Sign In"
-                    : "Create Account"}
-                </Button>
-
-                {activeTab === "login" && (
-                  <button
-                    type="button"
-                    onClick={() => setShowForgotPassword(true)}
-                    className="w-full text-sm text-muted-foreground hover:text-[#101828] transition-colors"
-                  >
-                    Forgot your password?
-                  </button>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-[#101828] font-medium">Email</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="email"
+                        placeholder="admin@example.com"
+                        className="rounded-none border-muted-foreground/30 focus:border-[#101828] h-12"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )}
-              </form>
-            </Form>
-          </Tabs>
+              />
+
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-[#101828] font-medium">Password</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="password" 
+                        placeholder="••••••••" 
+                        className="rounded-none border-muted-foreground/30 focus:border-[#101828] h-12"
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <Button 
+                type="submit" 
+                className="w-full h-12 bg-[#101828] hover:bg-[#101828]/90 text-white rounded-none font-medium uppercase tracking-wide" 
+                disabled={isLoading}
+              >
+                {isLoading ? "Loading..." : "Sign In"}
+              </Button>
+
+              <button
+                type="button"
+                onClick={() => setShowForgotPassword(true)}
+                className="w-full text-sm text-muted-foreground hover:text-[#101828] transition-colors"
+              >
+                Forgot your password?
+              </button>
+            </form>
+          </Form>
 
           {/* Forgot Password Modal */}
           {showForgotPassword && (
