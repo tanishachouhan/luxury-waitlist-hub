@@ -8,8 +8,8 @@ export function SharePanel() {
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
   
-  const shareUrl = "estatecrm.com/waitlist";
-  const fullUrl = `https://${shareUrl}`;
+  const fullUrl = typeof window !== 'undefined' ? window.location.origin : '';
+  const displayUrl = fullUrl.replace(/^https?:\/\//, '');
 
   const handleCopy = async () => {
     try {
@@ -55,7 +55,7 @@ export function SharePanel() {
             <Link className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input 
               readOnly 
-              value={shareUrl}
+              value={displayUrl}
               className="pl-10 bg-muted/50 border-border text-foreground"
             />
           </div>
