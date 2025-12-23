@@ -1,24 +1,24 @@
 import { Link } from "react-router-dom";
 import { Users, BarChart3, Mail, ArrowRight } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { WaitlistForm } from "@/components/WaitlistForm";
 import { AnimatedSection } from "@/components/AnimatedSection";
+import heroImage from "@/assets/hero-architecture.jpg";
 
 const FEATURES = [
   {
     icon: Mail,
-    title: "Instant Alerts",
+    title: "INSTANT ALERTS",
     description: "Get notified the moment a new lead joins your waitlist. Never miss an opportunity.",
   },
   {
     icon: BarChart3,
-    title: "Lead Scoring",
+    title: "LEAD SCORING",
     description: "Automatically prioritize leads based on budget, timing, and engagement level.",
   },
   {
     icon: Users,
-    title: "Auto-Export",
+    title: "AUTO-EXPORT",
     description: "Seamlessly export your leads to your favorite CRM or email marketing tools.",
   },
 ];
@@ -29,17 +29,17 @@ const Index = () => {
       {/* Navigation Bar - Sticky */}
       <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link to="/" className="text-xl font-bold text-foreground tracking-tight">
+          <Link to="/" className="font-heading text-xl font-semibold text-foreground tracking-wider uppercase">
             EstateCRM
           </Link>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-6">
             <Link
               to="/auth"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               Contact Support
             </Link>
-            <Button size="sm" className="font-medium">
+            <Button size="sm" className="font-medium uppercase tracking-wide">
               Get Early Access
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
@@ -47,103 +47,99 @@ const Index = () => {
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="py-20 md:py-28 bg-gradient-to-b from-muted/50 to-background">
-        <div className="container mx-auto px-4">
-          <AnimatedSection className="max-w-3xl mx-auto text-center mb-12">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground tracking-tight mb-6">
-              The Smartest Way to Manage Real Estate Leads.
+      {/* Hero Section - Split Layout */}
+      <section className="flex-1 grid lg:grid-cols-2 min-h-[calc(100vh-65px)]">
+        {/* Left Column - Text & Form */}
+        <div className="flex flex-col justify-center px-6 md:px-12 lg:px-16 xl:px-24 py-16 lg:py-24 bg-muted/20">
+          <AnimatedSection>
+            <h1 className="font-heading text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold text-[#101828] uppercase tracking-tight leading-[0.9] mb-6">
+              REAL ESTATE
+              <br />
+              CRM
             </h1>
-            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-              Stop using messy spreadsheets. Capture, track, and convert leads with our simple CRM.
-            </p>
+          </AnimatedSection>
+          
+          <AnimatedSection delay={100}>
+            <div className="flex items-center gap-4 mb-8">
+              <div className="w-[2px] h-8 bg-muted-foreground/40" />
+              <span className="text-xl md:text-2xl text-muted-foreground font-light tracking-wide">
+                Lead Management
+              </span>
+            </div>
           </AnimatedSection>
           
           <AnimatedSection delay={200}>
-            <Card className="max-w-xl mx-auto shadow-lg border-border">
-              <CardContent className="p-6 md:p-8">
-                <WaitlistForm />
-              </CardContent>
-            </Card>
-          </AnimatedSection>
-        </div>
-      </section>
-
-      {/* Social Proof Strip */}
-      <section className="py-12 border-y border-border bg-muted/30">
-        <div className="container mx-auto px-4">
-          <AnimatedSection>
-            <p className="text-center text-sm text-muted-foreground mb-8">
-              Trusted by agents at:
+            <p className="text-muted-foreground font-light leading-relaxed max-w-md mb-10">
+              Stop using messy spreadsheets. Capture, track, and convert leads with our simple CRM built specifically for real estate professionals.
             </p>
-            <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16">
-              {["Douglas Elliman", "Compass", "Sotheby's", "Corcoran", "Brown Harris"].map((name, index) => (
-                <div
-                  key={name}
-                  className="text-lg md:text-xl font-semibold text-muted-foreground/50 transition-all duration-500"
-                  style={{ 
-                    animationDelay: `${index * 100}ms`
-                  }}
-                >
-                  {name}
-                </div>
-              ))}
+          </AnimatedSection>
+          
+          <AnimatedSection delay={300}>
+            <div className="max-w-md">
+              <WaitlistForm />
             </div>
           </AnimatedSection>
         </div>
+
+        {/* Right Column - Image */}
+        <div className="hidden lg:block relative overflow-hidden">
+          <img 
+            src={heroImage} 
+            alt="Modern architecture" 
+            className="absolute inset-0 w-full h-full object-cover grayscale"
+          />
+        </div>
       </section>
 
-      {/* Features Grid */}
-      <section className="py-20 md:py-28 bg-background">
+      {/* Features Section - Minimal */}
+      <section className="py-24 md:py-32 bg-background">
         <div className="container mx-auto px-4">
-          <AnimatedSection className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Everything you need to close more deals
+          <AnimatedSection className="text-center mb-20">
+            <h2 className="font-heading text-3xl md:text-4xl lg:text-5xl font-bold text-[#101828] uppercase tracking-tight mb-4">
+              EVERYTHING YOU NEED
             </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-muted-foreground font-light max-w-2xl mx-auto">
               Simple, powerful tools designed specifically for real estate professionals.
             </p>
           </AnimatedSection>
           
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-16 max-w-5xl mx-auto">
             {FEATURES.map((feature, index) => (
               <AnimatedSection key={feature.title} delay={index * 150}>
-                <Card className="border-border bg-card hover:shadow-md transition-shadow h-full">
-                  <CardContent className="p-6 text-center">
-                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                      <feature.icon className="h-6 w-6 text-primary" />
-                    </div>
-                    <h3 className="text-lg font-semibold text-foreground mb-2">
-                      {feature.title}
-                    </h3>
-                    <p className="text-muted-foreground text-sm">
-                      {feature.description}
-                    </p>
-                  </CardContent>
-                </Card>
+                <div className="text-center">
+                  <div className="w-12 h-12 flex items-center justify-center mx-auto mb-6">
+                    <feature.icon className="h-8 w-8 text-muted-foreground stroke-[1.5]" />
+                  </div>
+                  <h3 className="font-heading text-lg font-semibold text-[#101828] uppercase tracking-wide mb-3">
+                    {feature.title}
+                  </h3>
+                  <p className="text-muted-foreground text-sm font-light leading-relaxed">
+                    {feature.description}
+                  </p>
+                </div>
               </AnimatedSection>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="py-8 border-t border-border bg-muted/30">
+      {/* Footer - Minimal */}
+      <footer className="py-10 border-t border-border">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground font-light">
               © {new Date().getFullYear()} EstateCRM. All rights reserved.
             </p>
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-8">
               <Link
                 to="#"
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors font-light"
               >
                 Privacy Policy
               </Link>
               <Link
                 to="#"
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors font-light"
               >
                 Terms of Service
               </Link>

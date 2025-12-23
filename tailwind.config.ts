@@ -81,6 +81,10 @@ export default {
           'Helvetica Neue',
           'Arial',
           'sans-serif'
+        ],
+        heading: [
+          'Oswald',
+          'sans-serif'
         ]
       },
       keyframes: {
