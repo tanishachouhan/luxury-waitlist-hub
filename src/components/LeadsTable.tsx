@@ -21,6 +21,8 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { StatusBadge } from "./StatusBadge";
 import { StatsGrid } from "./StatsGrid";
+import { LeadGrowthChart } from "./LeadGrowthChart";
+import { UserAvatar } from "./UserAvatar";
 import type { Database } from "@/integrations/supabase/types";
 
 type Lead = Database["public"]["Tables"]["leads"]["Row"];
@@ -34,6 +36,7 @@ const BUDGET_LABELS: Record<string, string> = {
 interface LeadsTableProps {
   showStats?: boolean;
   showFilters?: boolean;
+  showChart?: boolean;
   limit?: number;
   tableTitle?: string;
 }
@@ -41,6 +44,7 @@ interface LeadsTableProps {
 export function LeadsTable({ 
   showStats = true, 
   showFilters = true, 
+  showChart = false,
   limit,
   tableTitle 
 }: LeadsTableProps) {
@@ -167,15 +171,16 @@ export function LeadsTable({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {showStats && <StatsGrid leads={leads} />}
+      {showChart && <LeadGrowthChart />}
       
       {showFilters && (
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Filter className="h-4 w-4 text-muted-foreground" />
             <Select value={budgetFilter} onValueChange={setBudgetFilter}>
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-[180px] bg-card border-border">
                 <SelectValue placeholder="Filter by budget" />
               </SelectTrigger>
               <SelectContent>
@@ -186,7 +191,7 @@ export function LeadsTable({
               </SelectContent>
             </Select>
           </div>
-          <Button variant="outline" onClick={exportToCSV} disabled={filteredLeads.length === 0}>
+          <Button variant="outline" onClick={exportToCSV} disabled={filteredLeads.length === 0} className="shadow-sm">
             <Download className="h-4 w-4 mr-2" />
             Export CSV
           </Button>
@@ -194,40 +199,48 @@ export function LeadsTable({
       )}
 
       {tableTitle && (
-        <h2 className="text-lg font-semibold text-foreground">{tableTitle}</h2>
+        <h2 className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">{tableTitle}</h2>
       )}
 
-      <div className="rounded-lg border bg-card">
+      <div className="bg-card rounded-2xl shadow-lg overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Budget</TableHead>
-              <TableHead>Move-in Date</TableHead>
-              <TableHead>Neighborhoods</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+            <TableRow className="hover:bg-transparent border-b border-border/50">
+              <TableHead className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">Name</TableHead>
+              <TableHead className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">Email</TableHead>
+              <TableHead className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">Budget</TableHead>
+              <TableHead className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">Move-in</TableHead>
+              <TableHead className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">Areas</TableHead>
+              <TableHead className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">Status</TableHead>
+              <TableHead className="text-xs font-semibold tracking-wider text-muted-foreground uppercase text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {displayedLeads.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-12 text-muted-foreground">
+                <TableCell colSpan={7} className="text-center py-16 text-muted-foreground">
                   No leads yet. Share your waitlist form to start collecting leads.
                 </TableCell>
               </TableRow>
             ) : (
               displayedLeads.map((lead) => (
-                <TableRow key={lead.id}>
-                  <TableCell className="font-medium">{lead.full_name}</TableCell>
-                  <TableCell>{lead.email}</TableCell>
-                  <TableCell>{BUDGET_LABELS[lead.budget_range] || lead.budget_range}</TableCell>
-                  <TableCell>{format(new Date(lead.move_in_date), "MMM d, yyyy")}</TableCell>
+                <TableRow 
+                  key={lead.id} 
+                  className="hover:bg-muted/30 transition-colors border-b border-border/30 last:border-0"
+                >
                   <TableCell>
-                    <div className="flex flex-wrap gap-1">
+                    <div className="flex items-center gap-3">
+                      <UserAvatar name={lead.full_name} />
+                      <span className="font-medium text-foreground">{lead.full_name}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">{lead.email}</TableCell>
+                  <TableCell className="font-medium">{BUDGET_LABELS[lead.budget_range] || lead.budget_range}</TableCell>
+                  <TableCell className="text-muted-foreground">{format(new Date(lead.move_in_date), "MMM d, yyyy")}</TableCell>
+                  <TableCell>
+                    <div className="flex flex-wrap gap-1.5">
                       {lead.neighborhoods.slice(0, 2).map((n) => (
-                        <span key={n} className="text-xs bg-secondary px-2 py-0.5 rounded">
+                        <span key={n} className="text-xs bg-muted/50 text-muted-foreground px-2 py-0.5 rounded-full">
                           {n}
                         </span>
                       ))}
@@ -243,7 +256,7 @@ export function LeadsTable({
                       value={lead.status}
                       onValueChange={(value) => updateStatus(lead.id, value)}
                     >
-                      <SelectTrigger className="w-[120px] h-8 text-xs border-0 bg-transparent p-0">
+                      <SelectTrigger className="w-[120px] h-8 text-xs border-0 bg-transparent p-0 shadow-none focus:ring-0">
                         <StatusBadge status={lead.status as "new" | "contacted" | "archived"} />
                       </SelectTrigger>
                       <SelectContent>
@@ -258,6 +271,7 @@ export function LeadsTable({
                       variant="ghost"
                       size="sm"
                       onClick={() => copyEmail(lead.email)}
+                      className="hover:bg-muted/50"
                     >
                       <Copy className="h-4 w-4" />
                     </Button>

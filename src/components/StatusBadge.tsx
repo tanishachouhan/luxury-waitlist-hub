@@ -9,15 +9,15 @@ interface StatusBadgeProps {
 const statusConfig: Record<Status, { label: string; className: string }> = {
   new: {
     label: "New",
-    className: "bg-success/10 text-success border-success/20",
+    className: "bg-emerald-50 text-emerald-700",
   },
   contacted: {
     label: "Contacted",
-    className: "bg-muted/30 text-muted-foreground border-muted/40",
+    className: "bg-blue-50 text-blue-700",
   },
   archived: {
     label: "Archived",
-    className: "bg-muted/30 text-muted-foreground border-muted/40",
+    className: "bg-gray-100 text-gray-600",
   },
 };
 
@@ -27,7 +27,7 @@ export function StatusBadge({ status }: StatusBadgeProps) {
   return (
     <span
       className={cn(
-        "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border",
+        "inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium",
         config.className
       )}
     >

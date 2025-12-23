@@ -1,4 +1,4 @@
-import { Users, Inbox, MapPin } from "lucide-react";
+import { Users, Inbox, MapPin, TrendingUp, TrendingDown } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import type { Database } from "@/integrations/supabase/types";
 
@@ -25,33 +25,78 @@ export function StatsGrid({ leads }: StatsGridProps) {
 
   const stats = [
     {
-      label: "Total Leads",
+      label: "TOTAL LEADS",
       value: totalLeads,
       icon: Users,
+      iconBg: "bg-blue-50",
+      iconColor: "text-blue-600",
+      trend: "+12%",
+      trendUp: true,
+      trendLabel: "vs last week",
     },
     {
-      label: "New Inquiries",
+      label: "NEW INQUIRIES",
       value: newInquiries,
       icon: Inbox,
+      iconBg: "bg-emerald-50",
+      iconColor: "text-emerald-600",
+      trend: "+8%",
+      trendUp: true,
+      trendLabel: "vs last week",
     },
     {
-      label: "Top Location",
+      label: "TOP LOCATION",
       value: topNeighborhood,
       icon: MapPin,
+      iconBg: "bg-violet-50",
+      iconColor: "text-violet-600",
+      trend: null,
+      trendUp: null,
+      trendLabel: "most selected",
     },
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
       {stats.map((stat) => (
-        <Card key={stat.label} className="bg-white border border-border">
+        <Card 
+          key={stat.label} 
+          className="bg-card border-0 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-200 cursor-default"
+        >
           <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">{stat.label}</p>
-                <p className="text-3xl font-bold text-foreground">{stat.value}</p>
+            <div className="flex items-start justify-between">
+              <div className="space-y-3">
+                <p className="text-xs font-semibold tracking-wider text-muted-foreground">
+                  {stat.label}
+                </p>
+                <p className="text-3xl font-bold text-foreground tracking-tight">
+                  {stat.value}
+                </p>
+                <div className="flex items-center gap-1.5">
+                  {stat.trend ? (
+                    <>
+                      {stat.trendUp ? (
+                        <TrendingUp className="h-3.5 w-3.5 text-emerald-500" />
+                      ) : (
+                        <TrendingDown className="h-3.5 w-3.5 text-red-500" />
+                      )}
+                      <span className={`text-xs font-medium ${stat.trendUp ? 'text-emerald-600' : 'text-red-600'}`}>
+                        {stat.trend}
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        {stat.trendLabel}
+                      </span>
+                    </>
+                  ) : (
+                    <span className="text-xs text-muted-foreground">
+                      {stat.trendLabel}
+                    </span>
+                  )}
+                </div>
               </div>
-              <stat.icon className="h-8 w-8 text-muted-foreground/50" />
+              <div className={`p-3 rounded-xl ${stat.iconBg}`}>
+                <stat.icon className={`h-5 w-5 ${stat.iconColor}`} />
+              </div>
             </div>
           </CardContent>
         </Card>
