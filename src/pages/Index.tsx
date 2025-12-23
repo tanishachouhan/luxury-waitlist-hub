@@ -160,6 +160,12 @@ const Index = () => {
               >
                 Terms of Service
               </Link>
+              <Link
+                to="/auth"
+                className="text-xs text-gray-400 hover:text-muted-foreground transition-colors"
+              >
+                Staff Login
+              </Link>
             </div>
           </div>
         </div>
