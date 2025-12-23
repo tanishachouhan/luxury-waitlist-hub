@@ -20,6 +20,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { StatusBadge } from "./StatusBadge";
+import { StatsGrid } from "./StatsGrid";
 import type { Database } from "@/integrations/supabase/types";
 
 type Lead = Database["public"]["Tables"]["leads"]["Row"];
@@ -153,6 +154,7 @@ export function LeadsTable() {
 
   return (
     <div className="space-y-4">
+      <StatsGrid leads={leads} />
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Filter className="h-4 w-4 text-muted-foreground" />
