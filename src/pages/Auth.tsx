@@ -1,18 +1,11 @@
 import { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Building2 } from "lucide-react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -21,9 +14,10 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import heroImage from "@/assets/hero-architecture.jpg";
 
 const authSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -113,80 +107,122 @@ export default function Auth() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <header className="border-b border-border bg-card">
-        <div className="container mx-auto px-4 py-4">
-          <Link to="/" className="flex items-center gap-2">
-            <Building2 className="h-6 w-6 text-foreground" />
-            <span className="font-heading font-semibold text-foreground tracking-wider uppercase">EstateCRM</span>
-          </Link>
+    <div className="min-h-screen flex">
+      {/* Left Side - Visual Panel */}
+      <div className="hidden lg:flex lg:w-1/2 relative">
+        <img 
+          src={heroImage} 
+          alt="Modern architecture" 
+          className="absolute inset-0 w-full h-full object-cover grayscale"
+        />
+        {/* Dark navy overlay 90% opacity */}
+        <div className="absolute inset-0 bg-[#101828]/90" />
+        
+        {/* Logo centered */}
+        <div className="relative z-10 flex items-center justify-center w-full">
+          <div className="flex items-center gap-3">
+            <Building2 className="h-10 w-10 text-white" />
+            <span className="font-heading text-3xl font-semibold text-white tracking-wider uppercase">
+              EstateCRM
+            </span>
+          </div>
         </div>
-      </header>
+      </div>
 
-      <main className="flex-1 flex items-center justify-center px-4 py-12">
-        <Card className="w-full max-w-md shadow-lg border-border">
-          <CardHeader className="text-center space-y-2">
-            <CardTitle className="text-2xl font-semibold text-foreground">
-              Admin Access
-            </CardTitle>
-            <CardDescription className="text-muted-foreground">
-              Sign in to manage your waitlist
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "login" | "signup")}>
-              <TabsList className="grid w-full grid-cols-2 mb-6">
-                <TabsTrigger value="login">Sign In</TabsTrigger>
-                <TabsTrigger value="signup">Sign Up</TabsTrigger>
-              </TabsList>
+      {/* Right Side - Form Panel */}
+      <div className="w-full lg:w-1/2 bg-white flex items-center justify-center px-6 py-12">
+        <div className="w-full max-w-md">
+          {/* Mobile Logo */}
+          <div className="lg:hidden flex items-center justify-center gap-2 mb-10">
+            <Building2 className="h-8 w-8 text-[#101828]" />
+            <span className="font-heading text-2xl font-semibold text-[#101828] tracking-wider uppercase">
+              EstateCRM
+            </span>
+          </div>
 
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="email"
-                            placeholder="admin@example.com"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+          <div className="text-center mb-8">
+            <h1 className="font-heading text-3xl md:text-4xl font-bold text-[#101828] mb-2">
+              {activeTab === "login" ? "Welcome Back" : "Create Account"}
+            </h1>
+            <p className="text-muted-foreground">
+              {activeTab === "login" 
+                ? "Sign in to manage your leads" 
+                : "Get started with EstateCRM"}
+            </p>
+          </div>
 
-                  <FormField
-                    control={form.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Password</FormLabel>
-                        <FormControl>
-                          <Input type="password" placeholder="••••••••" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "login" | "signup")}>
+            <TabsList className="grid w-full grid-cols-2 mb-8 rounded-none border border-border bg-transparent">
+              <TabsTrigger 
+                value="login" 
+                className="rounded-none data-[state=active]:bg-[#101828] data-[state=active]:text-white"
+              >
+                Sign In
+              </TabsTrigger>
+              <TabsTrigger 
+                value="signup"
+                className="rounded-none data-[state=active]:bg-[#101828] data-[state=active]:text-white"
+              >
+                Sign Up
+              </TabsTrigger>
+            </TabsList>
 
-                  <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading
-                      ? "Loading..."
-                      : activeTab === "login"
-                      ? "Sign In"
-                      : "Create Account"}
-                  </Button>
-                </form>
-              </Form>
-            </Tabs>
-          </CardContent>
-        </Card>
-      </main>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-[#101828] font-medium">Email</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="email"
+                          placeholder="admin@example.com"
+                          className="rounded-none border-muted-foreground/30 focus:border-[#101828] h-12"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-[#101828] font-medium">Password</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="password" 
+                          placeholder="••••••••" 
+                          className="rounded-none border-muted-foreground/30 focus:border-[#101828] h-12"
+                          {...field} 
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <Button 
+                  type="submit" 
+                  className="w-full h-12 bg-[#101828] hover:bg-[#101828]/90 text-white rounded-none font-medium uppercase tracking-wide" 
+                  disabled={isLoading}
+                >
+                  {isLoading
+                    ? "Loading..."
+                    : activeTab === "login"
+                    ? "Sign In"
+                    : "Create Account"}
+                </Button>
+              </form>
+            </Form>
+          </Tabs>
+        </div>
+      </div>
     </div>
   );
 }
