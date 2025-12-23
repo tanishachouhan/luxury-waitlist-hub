@@ -91,6 +91,18 @@ export function WaitlistForm() {
 
       if (error) throw error;
 
+      // Send email notification (fire and forget, don't block success)
+      supabase.functions.invoke("send-lead-notification", {
+        body: {
+          fullName: data.fullName,
+          email: data.email,
+          phone: data.phone,
+          budgetRange: data.budgetRange,
+          moveInDate: format(data.moveInDate, "yyyy-MM-dd"),
+          neighborhoods: data.neighborhoods,
+        },
+      }).catch((err) => console.error("Failed to send notification:", err));
+
       setIsSuccess(true);
       toast({
         title: "You're on the list!",
