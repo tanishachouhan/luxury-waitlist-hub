@@ -58,13 +58,13 @@ const Index = () => {
       </header>
 
       {/* Hero Section - Split Layout */}
-      <section className="flex-1 relative min-h-[calc(100vh-65px)]">
-        {/* Background Image - fixed cover on mobile/tablet, right half on desktop */}
+      <section className="flex-1 relative min-h-[calc(100vh-65px)] overflow-hidden">
+        {/* Background Image - absolute cover on mobile/tablet, right half on desktop */}
         <div className="absolute inset-0 lg:left-1/2 lg:right-0">
           <img 
             src={heroImage} 
             alt="Modern architecture" 
-            className="w-full h-full object-cover grayscale fixed lg:absolute inset-0 lg:inset-auto"
+            className="w-full h-full object-cover grayscale"
           />
           {/* White overlay with 85% opacity for mobile/tablet readability */}
           <div className="absolute inset-0 bg-white/[0.85] backdrop-blur-md lg:hidden" />
@@ -109,7 +109,7 @@ const Index = () => {
       </section>
 
       {/* Features Section - Minimal */}
-      <section className="py-24 md:py-32 bg-background">
+      <section className="py-24 md:py-32 bg-white relative z-10">
         <div className="container mx-auto px-4">
           <AnimatedSection className="text-center mb-20">
             <h2 className="font-heading text-3xl md:text-4xl lg:text-5xl font-bold text-[#101828] uppercase tracking-tight mb-4">
@@ -141,7 +141,7 @@ const Index = () => {
       </section>
 
       {/* Footer - Minimal */}
-      <footer className="py-10 border-t border-border">
+      <footer className="py-10 border-t border-border bg-white relative z-10">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-sm text-muted-foreground font-light">
