@@ -59,20 +59,20 @@ const Index = () => {
 
       {/* Hero Section - Split Layout */}
       <section className="flex-1 relative min-h-[calc(100vh-65px)]">
-        {/* Background Image - visible on all screens */}
+        {/* Background Image - fixed cover on mobile/tablet, right half on desktop */}
         <div className="absolute inset-0 lg:left-1/2 lg:right-0">
           <img 
             src={heroImage} 
             alt="Modern architecture" 
-            className="w-full h-full object-cover grayscale"
+            className="w-full h-full object-cover grayscale fixed lg:absolute inset-0 lg:inset-auto"
           />
-          {/* Overlay for mobile/tablet readability */}
-          <div className="absolute inset-0 bg-background/95 backdrop-blur-sm lg:hidden" />
+          {/* White overlay with 85% opacity for mobile/tablet readability */}
+          <div className="absolute inset-0 bg-white/[0.85] backdrop-blur-md lg:hidden" />
         </div>
 
         <div className="relative grid lg:grid-cols-2 min-h-[calc(100vh-65px)]">
           {/* Left Column - Text & Form */}
-          <div className="flex flex-col justify-center px-6 md:px-12 lg:px-16 xl:px-24 py-16 lg:py-24 lg:bg-muted/20">
+          <div className="flex flex-col justify-center items-center lg:items-start text-center lg:text-left px-10 md:px-12 lg:px-16 xl:px-24 py-16 lg:py-24 lg:bg-muted/20">
             <AnimatedSection>
               <h1 className="font-heading text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold text-[#101828] uppercase tracking-tight leading-[0.9] mb-6">
                 REAL ESTATE
@@ -97,7 +97,7 @@ const Index = () => {
             </AnimatedSection>
             
             <AnimatedSection delay={300}>
-              <div className="max-w-md">
+              <div className="w-full max-w-md">
                 <WaitlistForm ref={formInputRef} />
               </div>
             </AnimatedSection>
