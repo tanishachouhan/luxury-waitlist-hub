@@ -58,46 +58,53 @@ const Index = () => {
       </header>
 
       {/* Hero Section - Split Layout */}
-      <section className="flex-1 grid lg:grid-cols-2 min-h-[calc(100vh-65px)]">
-        {/* Left Column - Text & Form */}
-        <div className="flex flex-col justify-center px-6 md:px-12 lg:px-16 xl:px-24 py-16 lg:py-24 bg-muted/20">
-          <AnimatedSection>
-            <h1 className="font-heading text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold text-[#101828] uppercase tracking-tight leading-[0.9] mb-6">
-              REAL ESTATE
-              <br />
-              CRM
-            </h1>
-          </AnimatedSection>
-          
-          <AnimatedSection delay={100}>
-            <div className="flex items-center gap-4 mb-8">
-              <div className="w-[2px] h-8 bg-muted-foreground/40" />
-              <span className="text-xl md:text-2xl text-muted-foreground font-light tracking-wide">
-                Lead Management
-              </span>
-            </div>
-          </AnimatedSection>
-          
-          <AnimatedSection delay={200}>
-            <p className="text-muted-foreground font-light leading-relaxed max-w-md mb-10">
-              Stop using messy spreadsheets. Capture, track, and convert leads with our simple CRM built specifically for real estate professionals.
-            </p>
-          </AnimatedSection>
-          
-          <AnimatedSection delay={300}>
-            <div className="max-w-md">
-              <WaitlistForm ref={formInputRef} />
-            </div>
-          </AnimatedSection>
-        </div>
-
-        {/* Right Column - Image */}
-        <div className="hidden lg:block relative overflow-hidden">
+      <section className="flex-1 relative min-h-[calc(100vh-65px)]">
+        {/* Background Image - visible on all screens */}
+        <div className="absolute inset-0 lg:left-1/2 lg:right-0">
           <img 
             src={heroImage} 
             alt="Modern architecture" 
-            className="absolute inset-0 w-full h-full object-cover grayscale"
+            className="w-full h-full object-cover grayscale"
           />
+          {/* Overlay for mobile/tablet readability */}
+          <div className="absolute inset-0 bg-background/95 backdrop-blur-sm lg:hidden" />
+        </div>
+
+        <div className="relative grid lg:grid-cols-2 min-h-[calc(100vh-65px)]">
+          {/* Left Column - Text & Form */}
+          <div className="flex flex-col justify-center px-6 md:px-12 lg:px-16 xl:px-24 py-16 lg:py-24 lg:bg-muted/20">
+            <AnimatedSection>
+              <h1 className="font-heading text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold text-[#101828] uppercase tracking-tight leading-[0.9] mb-6">
+                REAL ESTATE
+                <br />
+                CRM
+              </h1>
+            </AnimatedSection>
+            
+            <AnimatedSection delay={100}>
+              <div className="flex items-center gap-4 mb-8">
+                <div className="w-[2px] h-8 bg-muted-foreground/40" />
+                <span className="text-xl md:text-2xl text-muted-foreground font-light tracking-wide">
+                  Lead Management
+                </span>
+              </div>
+            </AnimatedSection>
+            
+            <AnimatedSection delay={200}>
+              <p className="text-muted-foreground font-light leading-relaxed max-w-md mb-10">
+                Stop using messy spreadsheets. Capture, track, and convert leads with our simple CRM built specifically for real estate professionals.
+              </p>
+            </AnimatedSection>
+            
+            <AnimatedSection delay={300}>
+              <div className="max-w-md">
+                <WaitlistForm ref={formInputRef} />
+              </div>
+            </AnimatedSection>
+          </div>
+
+          {/* Right Column - Empty space for desktop image */}
+          <div className="hidden lg:block" />
         </div>
       </section>
 
