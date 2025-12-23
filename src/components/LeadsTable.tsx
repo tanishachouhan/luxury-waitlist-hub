@@ -203,7 +203,8 @@ export function LeadsTable({
       )}
 
       <div className="bg-card rounded-2xl shadow-lg overflow-hidden">
-        <Table>
+        <div className="overflow-x-auto">
+          <Table>
           <TableHeader>
             <TableRow className="hover:bg-transparent border-b border-border/50">
               <TableHead className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">Name</TableHead>
@@ -280,7 +281,8 @@ export function LeadsTable({
               ))
             )}
           </TableBody>
-        </Table>
+          </Table>
+        </div>
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { AdminSidebar } from "@/components/AdminSidebar";
+import { AdminSidebar, MobileHeader } from "@/components/AdminSidebar";
 import { BrowserMockup } from "@/components/BrowserMockup";
 import { SharePanel } from "@/components/SharePanel";
 import { WaitlistForm } from "@/components/WaitlistForm";
@@ -45,36 +45,37 @@ export default function ShareForm() {
   }
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex flex-col lg:flex-row">
+      <MobileHeader />
       <AdminSidebar />
       
       {/* Main content with dot pattern background */}
       <main 
-        className="flex-1 p-8"
+        className="flex-1 p-4 md:p-6 lg:p-8"
         style={{
           backgroundColor: 'hsl(var(--muted) / 0.3)',
           backgroundImage: `radial-gradient(hsl(var(--muted-foreground) / 0.15) 1px, transparent 1px)`,
           backgroundSize: '20px 20px',
         }}
       >
-        <div className="mb-8">
-          <h1 className="text-2xl font-semibold text-foreground tracking-tight">
+        <div className="mb-6 md:mb-8">
+          <h1 className="text-xl md:text-2xl font-semibold text-foreground tracking-tight">
             Share & Publish
           </h1>
-          <p className="text-muted-foreground mt-1">
+          <p className="text-sm md:text-base text-muted-foreground mt-1">
             Preview your waitlist form and share it with the world.
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-[1fr_360px] gap-8 items-start">
+        <div className="grid lg:grid-cols-[1fr_360px] gap-6 lg:gap-8 items-start">
           {/* Browser Mockup */}
           <BrowserMockup>
             <div className="max-w-md mx-auto">
               <div className="text-center mb-8">
-                <h2 className="text-2xl font-semibold text-foreground mb-2">
+                <h2 className="text-xl md:text-2xl font-semibold text-foreground mb-2">
                   Join Our Waitlist
                 </h2>
-                <p className="text-muted-foreground">
+                <p className="text-sm md:text-base text-muted-foreground">
                   Get early access to exclusive properties
                 </p>
               </div>

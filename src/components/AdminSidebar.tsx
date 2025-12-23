@@ -1,11 +1,16 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { LayoutDashboard, Users, LogOut, Share2 } from "lucide-react";
+import { LayoutDashboard, Users, LogOut, Share2, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
-export function AdminSidebar() {
+interface AdminSidebarProps {
+  isMobile?: boolean;
+}
+
+function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
@@ -25,8 +30,13 @@ export function AdminSidebar() {
 
   const isActive = (path: string) => location.pathname === path;
 
+  const handleNav = (path: string) => {
+    navigate(path);
+    onNavigate?.();
+  };
+
   return (
-    <aside className="w-64 min-h-screen bg-card border-r border-border flex flex-col z-50 relative">
+    <>
       <div className="p-6 border-b border-border">
         <h1 className="text-xl font-semibold text-foreground tracking-wider uppercase">EstateCRM</h1>
         <p className="text-sm text-muted-foreground mt-1">Admin Dashboard</p>
@@ -37,7 +47,7 @@ export function AdminSidebar() {
           <li>
             <Button
               variant="ghost"
-              onClick={() => navigate("/admin")}
+              onClick={() => handleNav("/admin")}
               className={cn(
                 "w-full justify-start gap-3",
                 isActive("/admin")
@@ -52,7 +62,7 @@ export function AdminSidebar() {
           <li>
             <Button
               variant="ghost"
-              onClick={() => navigate("/admin/leads")}
+              onClick={() => handleNav("/admin/leads")}
               className={cn(
                 "w-full justify-start gap-3",
                 isActive("/admin/leads")
@@ -69,7 +79,7 @@ export function AdminSidebar() {
         <div className="mt-8 pt-8 border-t border-border">
           <Button
             variant="ghost"
-            onClick={() => navigate("/admin/share")}
+            onClick={() => handleNav("/admin/share")}
             className={cn(
               "w-full justify-start gap-3",
               isActive("/admin/share")
@@ -93,6 +103,48 @@ export function AdminSidebar() {
           Sign Out
         </Button>
       </div>
+    </>
+  );
+}
+
+export function AdminSidebar({ isMobile = false }: AdminSidebarProps) {
+  if (isMobile) {
+    return null; // Mobile sidebar handled by MobileHeader
+  }
+
+  return (
+    <aside className="hidden lg:flex w-64 min-h-screen bg-card border-r border-border flex-col z-50 relative">
+      <SidebarContent />
     </aside>
+  );
+}
+
+export function MobileHeader() {
+  return (
+    <div className="lg:hidden sticky top-0 z-40 bg-card border-b border-border">
+      <div className="flex items-center justify-between p-4">
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon" className="h-10 w-10">
+              <Menu className="h-5 w-5" />
+              <span className="sr-only">Open menu</span>
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="w-64 p-0 bg-card">
+            <SheetClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+              <X className="h-4 w-4" />
+              <span className="sr-only">Close</span>
+            </SheetClose>
+            <div className="flex flex-col h-full">
+              <SidebarContent onNavigate={() => {
+                // Sheet will auto-close due to the click
+              }} />
+            </div>
+          </SheetContent>
+        </Sheet>
+        <h1 className="text-lg font-semibold text-foreground tracking-wider uppercase">EstateCRM</h1>
+        <div className="w-10" /> {/* Spacer for centering */}
+      </div>
+    </div>
   );
 }

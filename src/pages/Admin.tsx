@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { AdminSidebar } from "@/components/AdminSidebar";
+import { AdminSidebar, MobileHeader } from "@/components/AdminSidebar";
 import { LeadsTable } from "@/components/LeadsTable";
 import type { User } from "@supabase/supabase-js";
 
@@ -46,15 +46,16 @@ export default function Admin() {
   }
 
   return (
-    <div className="min-h-screen bg-muted/30 flex">
+    <div className="min-h-screen bg-muted/30 flex flex-col lg:flex-row">
+      <MobileHeader />
       <AdminSidebar />
       
-      <main className="flex-1 p-8">
-        <div className="mb-8">
-          <h1 className="text-2xl font-semibold text-foreground tracking-tight">
+      <main className="flex-1 p-4 md:p-6 lg:p-8">
+        <div className="mb-6 md:mb-8">
+          <h1 className="text-xl md:text-2xl font-semibold text-foreground tracking-tight">
             {isDashboard ? "Dashboard Overview" : "All Leads"}
           </h1>
-          <p className="text-muted-foreground mt-1">
+          <p className="text-sm md:text-base text-muted-foreground mt-1">
             {isDashboard 
               ? "Welcome back to your command center." 
               : "Manage and track your full waitlist."}
