@@ -43,12 +43,12 @@ const Index = () => {
             EstateCRM
           </Link>
           <div className="flex items-center gap-6">
-            <Link
-              to="/auth"
+            <a
+              href="mailto:support@estatecrm.com"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               Contact Support
-            </Link>
+            </a>
             <Button size="sm" className="font-medium uppercase tracking-wide" onClick={scrollToForm}>
               Get Early Access
               <ArrowRight className="ml-2 h-4 w-4" />

@@ -24,7 +24,7 @@ export function AdminSidebar() {
   return (
     <aside className="w-64 min-h-screen bg-card border-r border-border flex flex-col">
       <div className="p-6 border-b border-border">
-        <h1 className="text-xl font-semibold text-foreground">Waitlist CRM</h1>
+        <h1 className="text-xl font-semibold text-foreground tracking-wider uppercase">EstateCRM</h1>
         <p className="text-sm text-muted-foreground mt-1">Admin Dashboard</p>
       </div>
 
