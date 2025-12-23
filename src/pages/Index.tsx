@@ -59,16 +59,16 @@ const Index = () => {
 
       {/* Hero Section - Split Layout */}
       <section className="flex-1 relative min-h-[calc(100vh-65px)] overflow-hidden">
-        {/* Background Image - full cover on mobile/tablet with overlay, right half only on desktop */}
-        <div className="absolute inset-0 lg:left-1/2 lg:right-0 z-0">
+        {/* Background Image - absolute cover on mobile/tablet, right half on desktop */}
+        <div className="absolute inset-0 lg:left-1/2 lg:right-0">
           <img 
             src={heroImage} 
             alt="Modern architecture" 
             className="w-full h-full object-cover grayscale"
           />
+          {/* White overlay with 85% opacity for mobile/tablet readability */}
+          <div className="absolute inset-0 bg-white/[0.85] backdrop-blur-md lg:hidden" />
         </div>
-        {/* 95% white overlay for mobile/tablet readability - only shown below lg breakpoint */}
-        <div className="absolute inset-0 bg-white/95 backdrop-blur-sm lg:hidden z-[1]" />
 
         <div className="relative grid lg:grid-cols-2 min-h-[calc(100vh-65px)]">
           {/* Left Column - Text & Form */}
