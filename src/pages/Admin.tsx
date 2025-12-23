@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminSidebar } from "@/components/AdminSidebar";
 import { LeadsTable } from "@/components/LeadsTable";
@@ -9,6 +9,9 @@ export default function Admin() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const isDashboard = location.pathname === "/admin";
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -48,13 +51,29 @@ export default function Admin() {
       
       <main className="flex-1 p-8">
         <div className="mb-8">
-          <h1 className="text-2xl font-semibold text-foreground">Waitlist Leads</h1>
+          <h1 className="text-2xl font-semibold text-foreground">
+            {isDashboard ? "Dashboard Overview" : "All Leads"}
+          </h1>
           <p className="text-muted-foreground mt-1">
-            Manage and track all your waitlist submissions
+            {isDashboard 
+              ? "Welcome back to your command center." 
+              : "Manage and track your full waitlist."}
           </p>
         </div>
 
-        <LeadsTable />
+        {isDashboard ? (
+          <LeadsTable 
+            showStats={true} 
+            showFilters={false} 
+            limit={5} 
+            tableTitle="Recent Submissions"
+          />
+        ) : (
+          <LeadsTable 
+            showStats={false} 
+            showFilters={true}
+          />
+        )}
       </main>
     </div>
   );
