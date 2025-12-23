@@ -1,37 +1,13 @@
-import { useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { useLocation } from "react-router-dom";
 import { AdminSidebar, MobileHeader } from "@/components/AdminSidebar";
 import { LeadsTable } from "@/components/LeadsTable";
-import type { User } from "@supabase/supabase-js";
+import { useRequireAdmin } from "@/hooks/useRequireAdmin";
 
 export default function Admin() {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
+  const { isAdmin, loading } = useRequireAdmin();
   const location = useLocation();
 
   const isDashboard = location.pathname === "/admin";
-
-  useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setUser(session?.user ?? null);
-      if (!session?.user) {
-        navigate("/auth");
-      }
-      setLoading(false);
-    });
-
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      if (!session?.user) {
-        navigate("/auth");
-      }
-      setLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
-  }, [navigate]);
 
   if (loading) {
     return (
@@ -41,7 +17,7 @@ export default function Admin() {
     );
   }
 
-  if (!user) {
+  if (!isAdmin) {
     return null;
   }
 
