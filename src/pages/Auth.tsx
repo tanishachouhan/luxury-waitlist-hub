@@ -118,7 +118,7 @@ export default function Auth() {
         <div className="container mx-auto px-4 py-4">
           <Link to="/" className="flex items-center gap-2">
             <Building2 className="h-6 w-6 text-foreground" />
-            <span className="font-semibold text-foreground">Prestige Residences</span>
+            <span className="font-heading font-semibold text-foreground tracking-wider uppercase">EstateCRM</span>
           </Link>
         </div>
       </header>
