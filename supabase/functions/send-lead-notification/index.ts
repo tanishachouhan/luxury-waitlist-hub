@@ -17,6 +17,16 @@ interface LeadNotificationRequest {
   neighborhoods: string[];
 }
 
+// HTML entity escaping to prevent XSS in email templates
+function escapeHtml(unsafe: string): string {
+  return unsafe
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 const handler = async (req: Request): Promise<Response> => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
@@ -26,7 +36,15 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     const { fullName, email, phone, budgetRange, moveInDate, neighborhoods }: LeadNotificationRequest = await req.json();
 
-    console.log("Sending notification for new lead:", fullName);
+    console.log("Sending notification for new lead:", escapeHtml(fullName));
+
+    // Sanitize all user inputs before inserting into HTML
+    const safeFullName = escapeHtml(fullName);
+    const safeEmail = escapeHtml(email);
+    const safePhone = escapeHtml(phone);
+    const safeBudgetRange = escapeHtml(budgetRange);
+    const safeMoveInDate = escapeHtml(moveInDate);
+    const safeNeighborhoods = neighborhoods.map(n => escapeHtml(n)).join(", ");
 
     // Send notification email to admin using Resend API directly
     const res = await fetch("https://api.resend.com/emails", {
@@ -38,7 +56,7 @@ const handler = async (req: Request): Promise<Response> => {
       body: JSON.stringify({
         from: "Prestige Residences <onboarding@resend.dev>",
         to: ["delivered@resend.dev"], // Replace with your admin email after domain verification
-        subject: `New Waitlist Lead: ${fullName}`,
+        subject: `New Waitlist Lead: ${safeFullName}`,
         html: `
           <h1>New Waitlist Submission</h1>
           <p>A new lead has joined the Priority Access Waitlist.</p>
@@ -47,27 +65,27 @@ const handler = async (req: Request): Promise<Response> => {
           <table style="border-collapse: collapse; width: 100%; max-width: 500px;">
             <tr>
               <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Name</td>
-              <td style="padding: 8px; border: 1px solid #ddd;">${fullName}</td>
+              <td style="padding: 8px; border: 1px solid #ddd;">${safeFullName}</td>
             </tr>
             <tr>
               <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Email</td>
-              <td style="padding: 8px; border: 1px solid #ddd;">${email}</td>
+              <td style="padding: 8px; border: 1px solid #ddd;">${safeEmail}</td>
             </tr>
             <tr>
               <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Phone</td>
-              <td style="padding: 8px; border: 1px solid #ddd;">${phone}</td>
+              <td style="padding: 8px; border: 1px solid #ddd;">${safePhone}</td>
             </tr>
             <tr>
               <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Budget</td>
-              <td style="padding: 8px; border: 1px solid #ddd;">${budgetRange}</td>
+              <td style="padding: 8px; border: 1px solid #ddd;">${safeBudgetRange}</td>
             </tr>
             <tr>
               <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Move-in Date</td>
-              <td style="padding: 8px; border: 1px solid #ddd;">${moveInDate}</td>
+              <td style="padding: 8px; border: 1px solid #ddd;">${safeMoveInDate}</td>
             </tr>
             <tr>
               <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Neighborhoods</td>
-              <td style="padding: 8px; border: 1px solid #ddd;">${neighborhoods.join(", ")}</td>
+              <td style="padding: 8px; border: 1px solid #ddd;">${safeNeighborhoods}</td>
             </tr>
           </table>
         `,
@@ -77,7 +95,8 @@ const handler = async (req: Request): Promise<Response> => {
     if (!res.ok) {
       const error = await res.text();
       console.error("Resend API error:", error);
-      throw new Error(`Failed to send email: ${error}`);
+      // Don't expose internal API error details to client
+      throw new Error("Failed to send notification email");
     }
 
     const data = await res.json();
@@ -89,8 +108,9 @@ const handler = async (req: Request): Promise<Response> => {
     });
   } catch (error: any) {
     console.error("Error in send-lead-notification function:", error);
+    // Return generic error message to client
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: "Unable to send notification. Please try again later." }),
       {
         status: 500,
         headers: { "Content-Type": "application/json", ...corsHeaders },
