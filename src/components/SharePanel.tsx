@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Copy, Check, Code, QrCode, Link } from "lucide-react";
+import { Copy, Check, Code, Link } from "lucide-react";
+import { QRCodeSVG } from "qrcode.react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
@@ -78,14 +79,19 @@ export function SharePanel() {
         </div>
       </div>
 
-      {/* QR Code Placeholder */}
+      {/* QR Code */}
       <div className="space-y-2">
         <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
           QR Code
         </label>
-        <div className="bg-muted/30 border border-dashed border-border rounded-xl p-6 flex flex-col items-center justify-center gap-3">
-          <div className="w-24 h-24 bg-muted rounded-lg flex items-center justify-center">
-            <QrCode className="w-12 h-12 text-muted-foreground/50" />
+        <div className="bg-background border border-border rounded-xl p-6 flex flex-col items-center justify-center gap-3">
+          <div className="p-3 bg-background rounded-lg">
+            <QRCodeSVG 
+              value={fullUrl} 
+              size={96}
+              level="M"
+              includeMargin={false}
+            />
           </div>
           <span className="text-sm text-muted-foreground">Scan to Join</span>
         </div>
