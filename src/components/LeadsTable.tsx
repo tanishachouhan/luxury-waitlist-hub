@@ -31,7 +31,19 @@ const BUDGET_LABELS: Record<string, string> = {
   "5k+": "$5k+",
 };
 
-export function LeadsTable() {
+interface LeadsTableProps {
+  showStats?: boolean;
+  showFilters?: boolean;
+  limit?: number;
+  tableTitle?: string;
+}
+
+export function LeadsTable({ 
+  showStats = true, 
+  showFilters = true, 
+  limit,
+  tableTitle 
+}: LeadsTableProps) {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
   const [budgetFilter, setBudgetFilter] = useState<string>("all");
@@ -144,6 +156,8 @@ export function LeadsTable() {
     return lead.budget_range === budgetFilter;
   });
 
+  const displayedLeads = limit ? filteredLeads.slice(0, limit) : filteredLeads;
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -154,27 +168,34 @@ export function LeadsTable() {
 
   return (
     <div className="space-y-4">
-      <StatsGrid leads={leads} />
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Filter className="h-4 w-4 text-muted-foreground" />
-          <Select value={budgetFilter} onValueChange={setBudgetFilter}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Filter by budget" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Budgets</SelectItem>
-              <SelectItem value="2k-3k">$2k - $3k</SelectItem>
-              <SelectItem value="3k-5k">$3k - $5k</SelectItem>
-              <SelectItem value="5k+">$5k+</SelectItem>
-            </SelectContent>
-          </Select>
+      {showStats && <StatsGrid leads={leads} />}
+      
+      {showFilters && (
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Filter className="h-4 w-4 text-muted-foreground" />
+            <Select value={budgetFilter} onValueChange={setBudgetFilter}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Filter by budget" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Budgets</SelectItem>
+                <SelectItem value="2k-3k">$2k - $3k</SelectItem>
+                <SelectItem value="3k-5k">$3k - $5k</SelectItem>
+                <SelectItem value="5k+">$5k+</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <Button variant="outline" onClick={exportToCSV} disabled={filteredLeads.length === 0}>
+            <Download className="h-4 w-4 mr-2" />
+            Export CSV
+          </Button>
         </div>
-        <Button variant="outline" onClick={exportToCSV} disabled={filteredLeads.length === 0}>
-          <Download className="h-4 w-4 mr-2" />
-          Export CSV
-        </Button>
-      </div>
+      )}
+
+      {tableTitle && (
+        <h2 className="text-lg font-semibold text-foreground">{tableTitle}</h2>
+      )}
 
       <div className="rounded-lg border bg-card">
         <Table>
@@ -190,14 +211,14 @@ export function LeadsTable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredLeads.length === 0 ? (
+            {displayedLeads.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={7} className="text-center py-12 text-muted-foreground">
                   No leads yet. Share your waitlist form to start collecting leads.
                 </TableCell>
               </TableRow>
             ) : (
-              filteredLeads.map((lead) => (
+              displayedLeads.map((lead) => (
                 <TableRow key={lead.id}>
                   <TableCell className="font-medium">{lead.full_name}</TableCell>
                   <TableCell>{lead.email}</TableCell>
