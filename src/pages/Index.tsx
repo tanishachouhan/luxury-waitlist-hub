@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { Link } from "react-router-dom";
 import { Users, BarChart3, Mail, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -24,6 +25,15 @@ const FEATURES = [
 ];
 
 const Index = () => {
+  const formInputRef = useRef<HTMLInputElement>(null);
+
+  const scrollToForm = () => {
+    formInputRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    setTimeout(() => {
+      formInputRef.current?.focus();
+    }, 500);
+  };
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Navigation Bar - Sticky */}
@@ -39,7 +49,7 @@ const Index = () => {
             >
               Contact Support
             </Link>
-            <Button size="sm" className="font-medium uppercase tracking-wide">
+            <Button size="sm" className="font-medium uppercase tracking-wide" onClick={scrollToForm}>
               Get Early Access
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
@@ -76,7 +86,7 @@ const Index = () => {
           
           <AnimatedSection delay={300}>
             <div className="max-w-md">
-              <WaitlistForm />
+              <WaitlistForm ref={formInputRef} />
             </div>
           </AnimatedSection>
         </div>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, forwardRef } from "react";
 import { format } from "date-fns";
 import { CalendarIcon, CheckCircle } from "lucide-react";
 import { z } from "zod";
@@ -62,7 +62,7 @@ const NEIGHBORHOODS = [
   "Brooklyn Heights",
 ];
 
-export function WaitlistForm() {
+export const WaitlistForm = forwardRef<HTMLInputElement>((_, ref) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const { toast } = useToast();
@@ -143,7 +143,7 @@ export function WaitlistForm() {
             <FormItem>
               <FormLabel>Full Name</FormLabel>
               <FormControl>
-                <Input placeholder="John Smith" {...field} />
+                <Input placeholder="John Smith" {...field} ref={ref} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -264,4 +264,6 @@ export function WaitlistForm() {
       </form>
     </Form>
   );
-}
+});
+
+WaitlistForm.displayName = "WaitlistForm";
