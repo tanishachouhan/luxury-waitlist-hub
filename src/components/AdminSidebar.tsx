@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { LayoutDashboard, Users, LogOut, ExternalLink } from "lucide-react";
+import { LayoutDashboard, Users, LogOut, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -69,11 +69,16 @@ export function AdminSidebar() {
         <div className="mt-8 pt-8 border-t border-border">
           <Button
             variant="ghost"
-            className="w-full justify-start gap-3 text-muted-foreground hover:text-foreground"
-            onClick={() => window.open("/", "_blank")}
+            onClick={() => navigate("/admin/share")}
+            className={cn(
+              "w-full justify-start gap-3",
+              isActive("/admin/share")
+                ? "bg-secondary text-foreground font-medium"
+                : "text-muted-foreground hover:text-foreground"
+            )}
           >
-            <ExternalLink className="h-4 w-4" />
-            View Form
+            <Share2 className="h-4 w-4" />
+            Share & Publish
           </Button>
         </div>
       </nav>
