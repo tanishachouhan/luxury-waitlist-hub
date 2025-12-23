@@ -65,6 +65,7 @@ const NEIGHBORHOODS = [
 export const WaitlistForm = forwardRef<HTMLInputElement>((_, ref) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [otherNeighborhood, setOtherNeighborhood] = useState("");
   const { toast } = useToast();
 
   const form = useForm<FormData>({
@@ -80,13 +81,22 @@ export const WaitlistForm = forwardRef<HTMLInputElement>((_, ref) => {
   async function onSubmit(data: FormData) {
     setIsSubmitting(true);
     try {
+      // Process neighborhoods: replace "__other__" marker with actual typed value
+      const processedNeighborhoods = data.neighborhoods
+        .filter(n => n !== "__other__")
+        .concat(
+          data.neighborhoods.includes("__other__") && otherNeighborhood.trim()
+            ? [otherNeighborhood.trim()]
+            : []
+        );
+
       const { error } = await supabase.from("leads").insert({
         full_name: data.fullName,
         email: data.email,
         phone: data.phone,
         move_in_date: format(data.moveInDate, "yyyy-MM-dd"),
         budget_range: data.budgetRange,
-        neighborhoods: data.neighborhoods,
+        neighborhoods: processedNeighborhoods,
       });
 
       if (error) throw error;
@@ -251,6 +261,8 @@ export const WaitlistForm = forwardRef<HTMLInputElement>((_, ref) => {
                   options={NEIGHBORHOODS}
                   selected={field.value}
                   onChange={field.onChange}
+                  otherValue={otherNeighborhood}
+                  onOtherChange={setOtherNeighborhood}
                 />
               </FormControl>
               <FormMessage />
