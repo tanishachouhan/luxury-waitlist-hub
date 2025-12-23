@@ -46,12 +46,12 @@ export default function Admin() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="min-h-screen bg-muted/30 flex">
       <AdminSidebar />
       
       <main className="flex-1 p-8">
         <div className="mb-8">
-          <h1 className="text-2xl font-semibold text-foreground">
+          <h1 className="text-2xl font-semibold text-foreground tracking-tight">
             {isDashboard ? "Dashboard Overview" : "All Leads"}
           </h1>
           <p className="text-muted-foreground mt-1">
@@ -65,6 +65,7 @@ export default function Admin() {
           <LeadsTable 
             showStats={true} 
             showFilters={false} 
+            showChart={true}
             limit={5} 
             tableTitle="Recent Submissions"
           />
@@ -72,6 +73,7 @@ export default function Admin() {
           <LeadsTable 
             showStats={false} 
             showFilters={true}
+            showChart={false}
           />
         )}
       </main>
