@@ -1,11 +1,13 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { LayoutDashboard, Users, LogOut, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 
 export function AdminSidebar() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
 
   async function handleLogout() {
@@ -21,8 +23,10 @@ export function AdminSidebar() {
     }
   }
 
+  const isActive = (path: string) => location.pathname === path;
+
   return (
-    <aside className="w-64 min-h-screen bg-card border-r border-border flex flex-col">
+    <aside className="w-64 min-h-screen bg-card border-r border-border flex flex-col z-50 relative">
       <div className="p-6 border-b border-border">
         <h1 className="text-xl font-semibold text-foreground tracking-wider uppercase">EstateCRM</h1>
         <p className="text-sm text-muted-foreground mt-1">Admin Dashboard</p>
@@ -33,7 +37,13 @@ export function AdminSidebar() {
           <li>
             <Button
               variant="ghost"
-              className="w-full justify-start gap-3 text-foreground"
+              onClick={() => navigate("/admin")}
+              className={cn(
+                "w-full justify-start gap-3",
+                isActive("/admin")
+                  ? "bg-secondary text-foreground font-medium"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
             >
               <LayoutDashboard className="h-4 w-4" />
               Dashboard
@@ -41,8 +51,14 @@ export function AdminSidebar() {
           </li>
           <li>
             <Button
-              variant="secondary"
-              className="w-full justify-start gap-3"
+              variant="ghost"
+              onClick={() => navigate("/admin/leads")}
+              className={cn(
+                "w-full justify-start gap-3",
+                isActive("/admin/leads")
+                  ? "bg-secondary text-foreground font-medium"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
             >
               <Users className="h-4 w-4" />
               Leads
@@ -53,7 +69,7 @@ export function AdminSidebar() {
         <div className="mt-8 pt-8 border-t border-border">
           <Button
             variant="ghost"
-            className="w-full justify-start gap-3 text-muted-foreground"
+            className="w-full justify-start gap-3 text-muted-foreground hover:text-foreground"
             onClick={() => window.open("/", "_blank")}
           >
             <ExternalLink className="h-4 w-4" />
